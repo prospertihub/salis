@@ -45,7 +45,7 @@ npx hardhat run scripts/deploy-simple.js --network localhost
 - **Contract**: `contracts/SalisToken.sol`
 - **Standard**: ERC-20
 - **Solidity Version**: 0.8.20
-- **License**: MIT
+- **License**: Unauthorized Use Only
 
 ## Security
 This contract includes multiple security features:
@@ -64,8 +64,8 @@ The contract includes comprehensive tests covering:
 - Pausable features
 - Access control
 
-## License
-MIT License - see LICENSE file for details.
+## Usage Rights
+This codebase is proprietary and is not licensed for public use or distribution. All rights are reserved. Any unauthorized use, reproduction, or distribution is strictly prohibited.
 
 ## Support
 For questions or issues, please refer to the documentation or create an issue in the repository.
