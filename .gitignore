@@ -1,0 +1,43 @@
+# Node.js
+node_modules
+
+# Hardhat
+cache
+artifacts
+
+# VS Code
+.vscode/
+
+# Env
+.env
+.env.*
+
+# Blacklist private keys
+keys
+
+# Test files
+*.log
+*.txt
+
+# Truffle/Hardhat config files
+*.json
+
+# Compiled contracts
+build/
+
+# Coverage reports
+coverage/
+coverage.json
+
+# Slither analysis results
+slither.json
+
+# Etherscan verification files
+etherscan-verify.json
+
+# Remix files
+./**.remix.json
+
+# Swarm/IPFS uploads
+swarm-hashes.json
+ipfs-hashes.json
