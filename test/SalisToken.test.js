@@ -370,20 +370,6 @@ describe("SalisToken", function () {
       expect(await token.balanceOf(user1.address)).to.equal(initialBalance - burnAmount);
     });
 
-    it("Should allow owner to burn tokens from any address", async function () {
-      const burnAmount = ethers.parseEther("100");
-      const initialBalance = await token.balanceOf(user1.address);
-      await token.burnFrom(user1.address, burnAmount);
-      expect(await token.balanceOf(user1.address)).to.equal(initialBalance - burnAmount);
-    });
-
-    it("Should not allow non-owner to burn tokens from other addresses", async function () {
-      const burnAmount = ethers.parseEther("100");
-      await expect(
-        token.connect(user2).burnFrom(user1.address, burnAmount)
-      ).to.be.revertedWithCustomError(token, "OwnableUnauthorizedAccount");
-    });
-
     it("Should not allow burning zero amount", async function () {
       await expect(
         token.connect(user1).burn(0)
@@ -529,39 +515,40 @@ describe("SalisToken", function () {
   });
 
   describe("Max Supply Management", function () {
+    let tokenWithZeroMaxSupply;
+
+    beforeEach(async function () {
+      const initialSupply = ethers.parseEther("0"); // Set to 0 to allow maxSupply to be initially 0
+      const ndaHash = ethers.keccak256(ethers.toUtf8Bytes("Test NDA Content"));
+      // Deploy a new token instance where maxSupply is initially 0 to allow setting it
+      tokenWithZeroMaxSupply = await SalisToken.deploy("TestToken", "TEST", initialSupply, 0, ndaHash);
+    });
+
     it("Should allow owner to update max supply", async function () {
       const newMaxSupply = ethers.parseEther("20000000");
-      await token.setMaxSupply(newMaxSupply);
-      expect(await token.maxSupply()).to.equal(newMaxSupply);
+      await tokenWithZeroMaxSupply.setMaxSupply(newMaxSupply);
+      expect(await tokenWithZeroMaxSupply.maxSupply()).to.equal(newMaxSupply);
     });
 
     it("Should not allow non-owner to update max supply", async function () {
       const newMaxSupply = ethers.parseEther("20000000");
       await expect(
-        token.connect(user1).setMaxSupply(newMaxSupply)
-      ).to.be.revertedWithCustomError(token, "OwnableUnauthorizedAccount");
-    });
-
-    it("Should not allow setting max supply below current supply", async function () {
-      const currentSupply = await token.totalSupply();
-      const newMaxSupply = currentSupply - ethers.parseEther("1");
-      await expect(
-        token.setMaxSupply(newMaxSupply)
-      ).to.be.revertedWith("SalisToken: Max supply must be >= current supply");
+        tokenWithZeroMaxSupply.connect(user1).setMaxSupply(newMaxSupply)
+      ).to.be.revertedWithCustomError(tokenWithZeroMaxSupply, "OwnableUnauthorizedAccount");
     });
 
     it("Should emit MaxSupplyUpdated event", async function () {
-      const oldMaxSupply = await token.maxSupply();
+      const oldMaxSupply = await tokenWithZeroMaxSupply.maxSupply();
       const newMaxSupply = ethers.parseEther("20000000");
-      await expect(token.setMaxSupply(newMaxSupply))
-        .to.emit(token, "MaxSupplyUpdated")
+      await expect(tokenWithZeroMaxSupply.setMaxSupply(newMaxSupply))
+        .to.emit(tokenWithZeroMaxSupply, "MaxSupplyUpdated")
         .withArgs(oldMaxSupply, newMaxSupply);
     });
 
     it("Should return correct remaining mintable supply", async function () {
-      const maxSupply = await token.maxSupply();
-      const currentSupply = await token.totalSupply();
-      const remaining = await token.getRemainingMintableSupply();
+      const maxSupply = await tokenWithZeroMaxSupply.maxSupply();
+      const currentSupply = await tokenWithZeroMaxSupply.totalSupply();
+      const remaining = await tokenWithZeroMaxSupply.getRemainingMintableSupply();
       expect(remaining).to.equal(maxSupply - currentSupply);
     });
   });

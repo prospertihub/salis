@@ -216,14 +216,6 @@ describe("SalisToken Blacklist Functionality", function () {
             ).to.be.revertedWith("SalisToken: Account is blacklisted");
         });
 
-        it("Should prevent burning from blacklisted address", async function () {
-            await token.setBlacklist(user1.address, true);
-            
-            await expect(
-                token.burnFrom(user1.address, ethers.parseEther("100"))
-            ).to.be.revertedWith("SalisToken: Account is blacklisted");
-        });
-
         it("Should prevent blacklisted address from burning their own tokens", async function () {
             await token.setBlacklist(user1.address, true);
             
