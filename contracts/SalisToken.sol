@@ -28,6 +28,7 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
     mapping(address => bool) public isBlacklisted;
     bool public mintingPaused;
     uint256 public blacklistedCount;
+    bool public maxSupplySet = false;
 
     // Immutable NDA hash - set once during deployment, never changeable
     bytes32 public immutable ndaHash;
@@ -56,6 +57,7 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
         require(_maxSupply >= _initialSupply, "SalisToken: Max supply must be >= initial supply");
         require(_ndaHash != bytes32(0), "SalisToken: NDA hash cannot be zero");
         maxSupply = _maxSupply;
+        if (_maxSupply > 0) { maxSupplySet = true; }
         ndaHash = _ndaHash;
         if (_initialSupply > 0) { _mint(msg.sender, _initialSupply); }
     }
@@ -188,9 +190,11 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
     }
 
     function setMaxSupply(uint256 _maxSupply) external onlyOwner {
+        require(!maxSupplySet, "SalisToken: Max supply can only be set once");
         require(_maxSupply >= totalSupply(), "SalisToken: Max supply must be >= current supply");
         uint256 oldMaxSupply = maxSupply;
         maxSupply = _maxSupply;
+        maxSupplySet = true;
         emit MaxSupplyUpdated(oldMaxSupply, _maxSupply);
     }
 
