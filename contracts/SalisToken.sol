@@ -71,6 +71,7 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
     }
 
     function burn(uint256 amount) external notBlacklisted(msg.sender) nonReentrant {
+        _checkAndUnlockExpired(msg.sender);
         require(amount > 0, "SalisToken: Amount must be greater than 0");
         require(this.transferableBalanceOf(msg.sender) >= amount, "SalisToken: Insufficient transferable balance");
         _burn(msg.sender, amount);
@@ -78,11 +79,13 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
     }
 
     function transfer(address to, uint256 amount) public override whenNotPaused notBlacklisted(msg.sender) notBlacklisted(to) returns (bool) {
+        _checkAndUnlockExpired(msg.sender);
         require(this.transferableBalanceOf(msg.sender) >= amount, "SalisToken: Insufficient transferable balance");
         return super.transfer(to, amount);
     }
 
     function transferFrom(address from, address to, uint256 amount) public override whenNotPaused notBlacklisted(from) notBlacklisted(to) returns (bool) {
+        _checkAndUnlockExpired(from);
         require(this.transferableBalanceOf(from) >= amount, "SalisToken: Insufficient transferable balance");
         return super.transferFrom(from, to, amount);
     }
