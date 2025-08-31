@@ -62,7 +62,7 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
         if (_initialSupply > 0) { _mint(msg.sender, _initialSupply); }
     }
 
-    function mint(address to, uint256 amount) external onlyOwner mintingNotPaused notBlacklisted(to) nonReentrant {
+    function mint(address to, uint256 amount) external onlyOwner mintingNotPaused notBlacklisted(to) {
         require(to != address(0), "SalisToken: Cannot mint to zero address");
         require(amount > 0, "SalisToken: Amount must be greater than 0");
         require(totalSupply() + amount <= maxSupply, "SalisToken: Would exceed max supply");
@@ -70,7 +70,7 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
         emit TokensMinted(to, amount);
     }
 
-    function burn(uint256 amount) external notBlacklisted(msg.sender) nonReentrant {
+    function burn(uint256 amount) external notBlacklisted(msg.sender) {
         _checkAndUnlockExpired(msg.sender);
         require(amount > 0, "SalisToken: Amount must be greater than 0");
         require(this.transferableBalanceOf(msg.sender) >= amount, "SalisToken: Insufficient transferable balance");
@@ -94,7 +94,7 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
         return super.approve(spender, amount);
     }
 
-    function distributeLocked(address to, uint256 amount, uint64 daysLock) external onlyOwner notBlacklisted(to) nonReentrant {
+    function distributeLocked(address to, uint256 amount, uint64 daysLock) external onlyOwner notBlacklisted(to) {
         require(to != address(0), "SalisToken: Cannot lock to zero address");
         require(amount > 0, "SalisToken: Amount must be greater than 0");
         require(daysLock > 0, "SalisToken: Lock period must be greater than 0");
@@ -132,7 +132,7 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
 
     function lockReleaseTimeOf(address account) external view returns (uint64) { return lockReleaseTimes[account]; }
 
-    function unlockExpired(address account) external nonReentrant {
+    function unlockExpired(address account) external {
         uint256 lockedAmount = lockedBalances[account];
         uint64 releaseTime = lockReleaseTimes[account];
         require(lockedAmount > 0, "SalisToken: No locked tokens");
