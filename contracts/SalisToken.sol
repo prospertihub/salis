@@ -77,13 +77,6 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
         emit TokensBurned(msg.sender, amount);
     }
 
-    function burnFrom(address from, uint256 amount) external onlyOwner notBlacklisted(from) nonReentrant {
-        require(amount > 0, "SalisToken: Amount must be greater than 0");
-        require(this.transferableBalanceOf(from) >= amount, "SalisToken: Insufficient transferable balance");
-        _burn(from, amount);
-        emit TokensBurned(from, amount);
-    }
-
     function transfer(address to, uint256 amount) public override whenNotPaused notBlacklisted(msg.sender) notBlacklisted(to) returns (bool) {
         require(this.transferableBalanceOf(msg.sender) >= amount, "SalisToken: Insufficient transferable balance");
         return super.transfer(to, amount);
