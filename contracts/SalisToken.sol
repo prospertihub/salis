@@ -178,13 +178,6 @@ contract SalisToken is ERC20, Ownable, Pausable, ReentrancyGuard {
         emit BlacklistBatchUpdated(accounts, blacklisted);
     }
 
-    function clearAllBlacklist() external onlyOwner returns (uint256) {
-        uint256 cleared = blacklistedCount;
-        blacklistedCount = 0;
-        emit BlacklistBatchUpdated(new address[](0), false);
-        return cleared;
-    }
-
     function setMaxSupply(uint256 _maxSupply) external onlyOwner {
         require(!maxSupplySet, "SalisToken: Max supply can only be set once");
         require(_maxSupply >= totalSupply(), "SalisToken: Max supply must be >= current supply");
